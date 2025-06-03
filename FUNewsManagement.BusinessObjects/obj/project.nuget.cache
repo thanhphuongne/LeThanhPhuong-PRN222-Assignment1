@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "kgScTprxaQAyLPBELTl3l4ISSX3G3KOhIR3c7xmHp21dkZSKeBzEycVM/DEySo7SHL8F1Akngv6CVuo76x/WcA==",
+  "success": true,
+  "projectFilePath": "/home/thanhphuong/Documents/MyLearning/PRN222/LeThanhPhuongSE18B01/FUNewsManagement.BusinessObjects/FUNewsManagement.BusinessObjects.csproj",
+  "expectedPackageFiles": [
+    "/home/thanhphuong/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.15/microsoft.aspnetcore.app.ref.8.0.15.nupkg.sha512"
+  ],
+  "logs": []
+}

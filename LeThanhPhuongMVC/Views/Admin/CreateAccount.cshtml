@@ -1,0 +1,168 @@
+@model LeThanhPhuongMVC.Models.AccountViewModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Create New Account</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateAccount" method="post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="AccountName" class="form-label">
+                                    <i class="bi bi-person"></i> Full Name <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="AccountName" class="form-control" placeholder="Enter full name" />
+                                <span asp-validation-for="AccountName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="AccountEmail" class="form-label">
+                                    <i class="bi bi-envelope"></i> Email Address <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="AccountEmail" class="form-control" placeholder="Enter email address" />
+                                <span asp-validation-for="AccountEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="AccountPassword" class="form-label">
+                                    <i class="bi bi-key"></i> Password <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="AccountPassword" class="form-control" type="password" placeholder="Enter password" />
+                                <span asp-validation-for="AccountPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="ConfirmPassword" class="form-label">
+                                    <i class="bi bi-key-fill"></i> Confirm Password <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="Confirm password" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AccountRole" class="form-label">
+                            <i class="bi bi-shield"></i> Role <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="AccountRole" class="form-select">
+                            <option value="">Select a role...</option>
+                            <option value="1">Administrator - Full system access</option>
+                            <option value="2">Staff - Manage news, categories, and tags</option>
+                            <option value="3">Lecturer - View news articles</option>
+                        </select>
+                        <span asp-validation-for="AccountRole" class="text-danger"></span>
+                        <div class="form-text">
+                            <small>
+                                <strong>Administrator:</strong> Can manage all accounts and view reports<br>
+                                <strong>Staff:</strong> Can manage news articles, categories, and tags<br>
+                                <strong>Lecturer:</strong> Can view active news articles
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="ManageAccounts" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Accounts
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Create Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Account Creation Guidelines</h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><strong>Email:</strong> Must be unique and valid format</li>
+                    <li><strong>Password:</strong> Minimum 6 characters recommended</li>
+                    <li><strong>Role:</strong> Determines user permissions in the system</li>
+                    <li><strong>Name:</strong> Full name for identification purposes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Role selection helper
+        document.getElementById('AccountRole').addEventListener('change', function() {
+            const roleValue = this.value;
+            const roleDescriptions = {
+                '1': 'Administrators have full access to manage accounts, view reports, and perform all system operations.',
+                '2': 'Staff members can create and manage news articles, categories, and tags. They can also manage their own profile.',
+                '3': 'Lecturers can view all active news articles but cannot create or modify content.'
+            };
+            
+            let helpText = document.getElementById('roleHelp');
+            if (!helpText) {
+                helpText = document.createElement('div');
+                helpText.id = 'roleHelp';
+                helpText.className = 'alert alert-info mt-2';
+                this.parentNode.appendChild(helpText);
+            }
+            
+            if (roleValue && roleDescriptions[roleValue]) {
+                helpText.innerHTML = '<i class="bi bi-info-circle"></i> ' + roleDescriptions[roleValue];
+                helpText.style.display = 'block';
+            } else {
+                helpText.style.display = 'none';
+            }
+        });
+
+        // Password strength indicator
+        document.getElementById('AccountPassword').addEventListener('input', function() {
+            const password = this.value;
+            let strengthIndicator = document.getElementById('password-strength');
+            
+            if (password.length === 0) {
+                if (strengthIndicator) strengthIndicator.remove();
+                return;
+            }
+            
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            const colors = ['danger', 'danger', 'warning', 'info', 'success', 'success'];
+            const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+            
+            if (!strengthIndicator) {
+                strengthIndicator = document.createElement('small');
+                strengthIndicator.id = 'password-strength';
+                strengthIndicator.className = 'form-text';
+                this.parentNode.appendChild(strengthIndicator);
+            }
+            
+            strengthIndicator.className = `form-text text-${colors[strength]}`;
+            strengthIndicator.textContent = `Password strength: ${texts[strength]}`;
+        });
+    </script>
+}

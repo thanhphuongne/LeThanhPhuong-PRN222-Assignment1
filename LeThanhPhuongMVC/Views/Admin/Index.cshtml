@@ -1,0 +1,184 @@
+@model IEnumerable<FUNewsManagement.BusinessObjects.SystemAccount>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-speedometer2"></i> Admin Dashboard</h2>
+            <div class="text-muted">
+                <i class="bi bi-person-circle"></i> Welcome, @ViewBag.CurrentUserName
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@Model.Count()</h4>
+                                <p class="mb-0">Total Accounts</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-people display-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@Model.Count(a => a.AccountRole == 1)</h4>
+                                <p class="mb-0">Administrators</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-shield-check display-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@Model.Count(a => a.AccountRole == 2)</h4>
+                                <p class="mb-0">Staff Members</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-person-badge display-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@Model.Count(a => a.AccountRole == 3)</h4>
+                                <p class="mb-0">Lecturers</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-mortarboard display-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-gear"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a asp-action="ManageAccounts" class="btn btn-outline-primary">
+                                <i class="bi bi-people"></i> Manage Accounts
+                            </a>
+                            <a asp-action="CreateAccount" class="btn btn-outline-success">
+                                <i class="bi bi-person-plus"></i> Create New Account
+                            </a>
+                            <a asp-action="Reports" class="btn btn-outline-info">
+                                <i class="bi bi-graph-up"></i> View Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> System Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>System:</strong> FU News Management System</p>
+                        <p><strong>Version:</strong> 1.0.0</p>
+                        <p><strong>Database:</strong> SQLite</p>
+                        <p><strong>Environment:</strong> Development</p>
+                        <p><strong>Current Time:</strong> @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Accounts -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Accounts</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var account in Model.Take(5))
+                                        {
+                                            <tr>
+                                                <td>@account.AccountID</td>
+                                                <td>@account.AccountName</td>
+                                                <td>@account.AccountEmail</td>
+                                                <td>
+                                                    @switch (account.AccountRole)
+                                                    {
+                                                        case 1:
+                                                            <span class="badge bg-danger">Admin</span>
+                                                            break;
+                                                        case 2:
+                                                            <span class="badge bg-warning">Staff</span>
+                                                            break;
+                                                        case 3:
+                                                            <span class="badge bg-info">Lecturer</span>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <a asp-action="EditAccount" asp-route-id="@account.AccountID" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center">
+                                <a asp-action="ManageAccounts" class="btn btn-primary">
+                                    View All Accounts <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted text-center">No accounts found.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

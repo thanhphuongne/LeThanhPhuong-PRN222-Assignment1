@@ -1,0 +1,147 @@
+@model FUNewsManagement.BusinessObjects.NewsArticle
+@{
+    ViewData["Title"] = Model.NewsTitle;
+}
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">News</a></li>
+                <li class="breadcrumb-item"><a asp-action="Category" asp-route-id="@Model.CategoryID">@Model.Category.CategoryName</a></li>
+                <li class="breadcrumb-item active">@Model.NewsTitle</li>
+            </ol>
+        </nav>
+
+        <article class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <span class="badge bg-light text-dark me-2">
+                            <i class="bi bi-tag"></i> @Model.Category.CategoryName
+                        </span>
+                        <small>
+                            <i class="bi bi-calendar"></i> @Model.CreatedDate?.ToString("MMMM dd, yyyy 'at' HH:mm")
+                        </small>
+                    </div>
+                    <div class="col-auto">
+                        @if (Model.NewsStatus)
+                        {
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Active
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                <i class="bi bi-pause-circle"></i> Inactive
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <h1 class="card-title mb-4">@Model.NewsTitle</h1>
+
+                @if (!string.IsNullOrEmpty(Model.Headline))
+                {
+                    <div class="alert alert-light border-start border-primary border-4 mb-4">
+                        <h5 class="fw-bold text-primary mb-0">@Model.Headline</h5>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.NewsContent))
+                {
+                    <div class="news-content mb-4">
+                        @Html.Raw(Model.NewsContent.Replace("\n", "<br>"))
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.NewsSource))
+                {
+                    <div class="alert alert-info">
+                        <strong><i class="bi bi-info-circle"></i> Source:</strong> @Model.NewsSource
+                    </div>
+                }
+
+                @if (Model.Tags.Any())
+                {
+                    <div class="mb-4">
+                        <h6><i class="bi bi-tags"></i> Tags:</h6>
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <span class="badge bg-secondary me-2 mb-1">@tag.TagName</span>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="card-footer bg-light">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <small class="text-muted">
+                            <i class="bi bi-person"></i> Created by: <strong>@Model.CreatedBy.AccountName</strong>
+                        </small>
+                        @if (Model.ModifiedDate.HasValue && Model.UpdatedBy != null)
+                        {
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-pencil"></i> Last updated: @Model.ModifiedDate?.ToString("MMM dd, yyyy 'at' HH:mm") by @Model.UpdatedBy.AccountName
+                            </small>
+                        }
+                    </div>
+                    <div class="col-auto">
+                        <a asp-action="Index" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left"></i> Back to News
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Related News (same category) -->
+        <div class="mt-5">
+            <h4><i class="bi bi-newspaper"></i> Related News</h4>
+            <div class="row">
+                <!-- This would be populated by a separate action or ViewComponent in a real application -->
+                <div class="col-12">
+                    <p class="text-muted">
+                        <a asp-action="Category" asp-route-id="@Model.CategoryID" class="btn btn-outline-primary">
+                            View more articles in @Model.Category.CategoryName
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add some interactivity for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+}
+
+<style>
+    .news-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        text-align: justify;
+    }
+    
+    .news-content p {
+        margin-bottom: 1.5rem;
+    }
+</style>

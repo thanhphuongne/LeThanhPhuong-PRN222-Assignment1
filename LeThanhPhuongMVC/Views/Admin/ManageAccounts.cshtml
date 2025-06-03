@@ -1,0 +1,186 @@
+@model IEnumerable<FUNewsManagement.BusinessObjects.SystemAccount>
+@{
+    ViewData["Title"] = "Manage Accounts";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-people"></i> Manage Accounts</h2>
+            <a asp-action="CreateAccount" class="btn btn-success">
+                <i class="bi bi-person-plus"></i> Create New Account
+            </a>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">All System Accounts</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var account in Model)
+                                {
+                                    <tr>
+                                        <td>@account.AccountID</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-person-circle me-2 text-muted"></i>
+                                                @account.AccountName
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="mailto:@account.AccountEmail" class="text-decoration-none">
+                                                @account.AccountEmail
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @switch (account.AccountRole)
+                                            {
+                                                case 1:
+                                                    <span class="badge bg-danger">
+                                                        <i class="bi bi-shield-check"></i> Administrator
+                                                    </span>
+                                                    break;
+                                                case 2:
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-person-badge"></i> Staff
+                                                    </span>
+                                                    break;
+                                                case 3:
+                                                    <span class="badge bg-info">
+                                                        <i class="bi bi-mortarboard"></i> Lecturer
+                                                    </span>
+                                                    break;
+                                                default:
+                                                    <span class="badge bg-secondary">Unknown</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="EditAccount" asp-route-id="@account.AccountID" 
+                                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                @if (account.AccountID != ViewBag.UserId)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            onclick="confirmDelete(@account.AccountID, '@account.AccountName')" title="Delete">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                        <h4 class="mt-3 text-muted">No Accounts Found</h4>
+                        <p class="text-muted">There are no accounts in the system.</p>
+                        <a asp-action="CreateAccount" class="btn btn-primary">
+                            <i class="bi bi-person-plus"></i> Create First Account
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the account for <strong id="accountName"></strong>?</p>
+                <p class="text-danger">
+                    <i class="bi bi-warning"></i> This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(accountId, accountName) {
+            document.getElementById('accountName').textContent = accountName;
+            document.getElementById('deleteForm').action = '@Url.Action("DeleteAccount")/' + accountId;
+            
+            var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+        }
+
+        // Add search functionality
+        function filterTable() {
+            const searchInput = document.getElementById('searchInput');
+            const filter = searchInput.value.toLowerCase();
+            const table = document.querySelector('table tbody');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                
+                for (let j = 0; j < cells.length - 1; j++) { // Exclude actions column
+                    if (cells[j].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+
+        // Add search input if table has data
+        @if (Model.Any())
+        {
+            <text>
+            document.addEventListener('DOMContentLoaded', function() {
+                const cardHeader = document.querySelector('.card-header');
+                const searchDiv = document.createElement('div');
+                searchDiv.className = 'mt-2';
+                searchDiv.innerHTML = `
+                    <input type="text" id="searchInput" class="form-control" 
+                           placeholder="Search accounts..." onkeyup="filterTable()">
+                `;
+                cardHeader.appendChild(searchDiv);
+            });
+            </text>
+        }
+    </script>
+}
