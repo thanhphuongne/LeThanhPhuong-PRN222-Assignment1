@@ -16,6 +16,21 @@ namespace FUNewsManagement.DataAccess.Repositories
 
         public async Task<SystemAccount?> AuthenticateAsync(string email, string password)
         {
+            Console.WriteLine($"Repository - Email: '{email}' (Length: {email.Length})");
+            Console.WriteLine($"Repository - Password: '{password}' (Length: {password.Length})");
+
+            // First, let's find the user by email only
+            var userByEmail = await _dbSet.FirstOrDefaultAsync(a => a.AccountEmail == email);
+            if (userByEmail != null)
+            {
+                Console.WriteLine($"Found user by email - Stored password: '{userByEmail.AccountPassword}' (Length: {userByEmail.AccountPassword.Length})");
+                Console.WriteLine($"Password match: {userByEmail.AccountPassword == password}");
+            }
+            else
+            {
+                Console.WriteLine("No user found with that email");
+            }
+
             return await _dbSet.FirstOrDefaultAsync(a => a.AccountEmail == email && a.AccountPassword == password);
         }
 
