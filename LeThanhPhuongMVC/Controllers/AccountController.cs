@@ -35,16 +35,7 @@ namespace LeThanhPhuongMVC.Controllers
                 return View(model);
             }
 
-            // Debug logging
-            Console.WriteLine($"Login attempt - Email: {model.Email}, Password: {model.Password}");
-
             var user = await _accountService.AuthenticateAsync(model.Email, model.Password);
-
-            Console.WriteLine($"Authentication result: {(user != null ? "Success" : "Failed")}");
-            if (user != null)
-            {
-                Console.WriteLine($"User found - ID: {user.AccountID}, Name: {user.AccountName}, Role: {user.AccountRole}");
-            }
 
             if (user == null)
             {

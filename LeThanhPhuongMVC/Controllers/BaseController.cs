@@ -11,9 +11,9 @@ namespace LeThanhPhuongMVC.Controllers
         protected int? CurrentUserRole => HttpContext.Session.GetInt32("UserRole");
 
         protected bool IsLoggedIn => CurrentUserId.HasValue;
-        protected bool IsAdmin => CurrentUserRole == 1;
-        protected bool IsStaff => CurrentUserRole == 2;
-        protected bool IsLecturer => CurrentUserRole == 3;
+        protected bool IsAdmin => CurrentUserRole == 3;  // Admin role = 3 (separate from staff)
+        protected bool IsStaff => CurrentUserRole == 1;  // Staff role = 1 (per assignment requirements)
+        protected bool IsLecturer => CurrentUserRole == 2; // Lecturer role = 2 (per assignment requirements)
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {

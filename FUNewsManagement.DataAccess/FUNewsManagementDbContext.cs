@@ -95,7 +95,7 @@ namespace FUNewsManagement.DataAccess
 
         private void SeedData(ModelBuilder modelBuilder)
         {
-            // Seed default admin account
+            // Seed default accounts
             modelBuilder.Entity<SystemAccount>().HasData(
                 new SystemAccount
                 {
@@ -103,7 +103,23 @@ namespace FUNewsManagement.DataAccess
                     AccountName = "System Administrator",
                     AccountEmail = "admin@FUNewsManagementSystem.org",
                     AccountPassword = "@@abc123@@",
-                    AccountRole = 1 // Admin
+                    AccountRole = 3 // Admin
+                },
+                new SystemAccount
+                {
+                    AccountID = 2,
+                    AccountName = "Staff User",
+                    AccountEmail = "staff@FUNewsManagementSystem.org",
+                    AccountPassword = "staff123",
+                    AccountRole = 1 // Staff
+                },
+                new SystemAccount
+                {
+                    AccountID = 3,
+                    AccountName = "Lecturer User",
+                    AccountEmail = "lecturer@FUNewsManagementSystem.org",
+                    AccountPassword = "lecturer123",
+                    AccountRole = 2 // Lecturer
                 }
             );
 
