@@ -34,7 +34,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h4>@Model.Count(a => a.AccountRole == 1)</h4>
+                                <h4>@Model.Count(a => a.AccountRole == 3)</h4>
                                 <p class="mb-0">Administrators</p>
                             </div>
                             <div class="align-self-center">
@@ -49,7 +49,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h4>@Model.Count(a => a.AccountRole == 2)</h4>
+                                <h4>@Model.Count(a => a.AccountRole == 1)</h4>
                                 <p class="mb-0">Staff Members</p>
                             </div>
                             <div class="align-self-center">
@@ -64,7 +64,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h4>@Model.Count(a => a.AccountRole == 3)</h4>
+                                <h4>@Model.Count(a => a.AccountRole == 2)</h4>
                                 <p class="mb-0">Lecturers</p>
                             </div>
                             <div class="align-self-center">
@@ -146,13 +146,13 @@
                                                     @switch (account.AccountRole)
                                                     {
                                                         case 1:
-                                                            <span class="badge bg-danger">Admin</span>
-                                                            break;
-                                                        case 2:
                                                             <span class="badge bg-warning">Staff</span>
                                                             break;
-                                                        case 3:
+                                                        case 2:
                                                             <span class="badge bg-info">Lecturer</span>
+                                                            break;
+                                                        case 3:
+                                                            <span class="badge bg-danger">Admin</span>
                                                             break;
                                                     }
                                                 </td>

@@ -1,0 +1,322 @@
+@model IEnumerable<FUNewsManagement.BusinessObjects.NewsArticle>
+@{
+    ViewData["Title"] = "News Reports";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-graph-up"></i> News Reports</h2>
+            <div class="text-muted">
+                <i class="bi bi-person-circle"></i> Welcome, @ViewBag.CurrentUserName
+            </div>
+        </div>
+
+        <!-- Date Range Filter -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-range"></i> Filter by Date Range</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Reports" method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" value="@ViewBag.StartDate" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" value="@ViewBag.EndDate" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Generate Report
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Statistics Summary -->
+        @if (Model.Any())
+        {
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>@Model.Count()</h4>
+                                    <p class="mb-0">Total Articles</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="bi bi-newspaper display-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>@Model.Count(n => n.NewsStatus)</h4>
+                                    <p class="mb-0">Active Articles</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="bi bi-check-circle display-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>@Model.Count(n => !n.NewsStatus)</h4>
+                                    <p class="mb-0">Inactive Articles</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="bi bi-x-circle display-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>@Model.GroupBy(n => n.CategoryID).Count()</h4>
+                                    <p class="mb-0">Categories Used</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="bi bi-tags display-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles by Category Chart -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Articles by Category</h5>
+                        </div>
+                        <div class="card-body">
+                            @{
+                                var categoryStats = Model.GroupBy(n => n.Category.CategoryName)
+                                                         .Select(g => new { Category = g.Key, Count = g.Count() })
+                                                         .OrderByDescending(x => x.Count);
+                            }
+                            @foreach (var stat in categoryStats)
+                            {
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>@stat.Category</span>
+                                        <span class="badge bg-primary">@stat.Count</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: @((stat.Count * 100.0 / Model.Count()).ToString("F1"))%"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="bi bi-person-lines-fill"></i> Articles by Author</h5>
+                        </div>
+                        <div class="card-body">
+                            @{
+                                var authorStats = Model.GroupBy(n => n.CreatedBy.AccountName)
+                                                       .Select(g => new { Author = g.Key, Count = g.Count() })
+                                                       .OrderByDescending(x => x.Count);
+                            }
+                            @foreach (var stat in authorStats)
+                            {
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>@stat.Author</span>
+                                        <span class="badge bg-success">@stat.Count</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: @((stat.Count * 100.0 / Model.Count()).ToString("F1"))%"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- News Articles Table -->
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-table"></i> 
+                    @if (ViewBag.StartDate != null && ViewBag.EndDate != null)
+                    {
+                        <span>News Articles from @ViewBag.StartDate to @ViewBag.EndDate</span>
+                    }
+                    else
+                    {
+                        <span>Select date range to view articles</span>
+                    }
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Author</th>
+                                    <th>Created Date</th>
+                                    <th>Status</th>
+                                    <th>Tags</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var article in Model)
+                                {
+                                    <tr>
+                                        <td>@article.NewsArticleID</td>
+                                        <td>
+                                            <strong>@article.NewsTitle</strong>
+                                            @if (!string.IsNullOrEmpty(article.Headline))
+                                            {
+                                                <br><small class="text-muted">@article.Headline</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@article.Category.CategoryName</span>
+                                        </td>
+                                        <td>@article.CreatedBy.AccountName</td>
+                                        <td>@article.CreatedDate?.ToString("MMM dd, yyyy HH:mm")</td>
+                                        <td>
+                                            @if (article.NewsStatus)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (article.Tags.Any())
+                                            {
+                                                @foreach (var tag in article.Tags)
+                                                {
+                                                    <span class="badge bg-secondary me-1">@tag.TagName</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No tags</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                        <h4 class="text-muted mt-3">No articles found</h4>
+                        <p class="text-muted">
+                            @if (ViewBag.StartDate != null && ViewBag.EndDate != null)
+                            {
+                                <span>No articles were created between @ViewBag.StartDate and @ViewBag.EndDate.</span>
+                            }
+                            else
+                            {
+                                <span>Please select a date range to generate the report.</span>
+                            }
+                        </p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        @if (Model.Any())
+        {
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-download"></i> Export Options</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="text-muted">Export this report in different formats:</p>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-success" onclick="window.print()">
+                                    <i class="bi bi-printer"></i> Print Report
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" onclick="exportToCSV()">
+                                    <i class="bi bi-file-earmark-spreadsheet"></i> Export to CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+function exportToCSV() {
+    // Get table data
+    const table = document.querySelector('table');
+    if (!table) return;
+
+    let csv = 'ID,Title,Category,Author,Created Date,Status,Tags\n';
+
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const rowData = [];
+        cells.forEach((cell, index) => {
+            if (index < 7) { // Only first 7 columns
+                let text = cell.textContent.trim().replace(/"/g, '""');
+                rowData.push('"' + text + '"');
+            }
+        });
+        csv += rowData.join(',') + '\n';
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'news_report_' + new Date().toISOString().slice(0,10) + '.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+</script>
