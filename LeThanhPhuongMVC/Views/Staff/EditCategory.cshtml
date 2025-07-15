@@ -1,0 +1,250 @@
+@model FUNewsManagement.BusinessObjects.Category
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil-square"></i> Edit Category
+                </h4>
+            </div>
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form asp-action="EditCategory" method="post">
+                    <input asp-for="CategoryID" type="hidden" />
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label asp-for="CategoryName" class="form-label">
+                                    <i class="bi bi-tag"></i> Category Name *
+                                </label>
+                                <input asp-for="CategoryName" class="form-control" placeholder="Enter category name" />
+                                <span asp-validation-for="CategoryName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="ParentCategoryID" class="form-label">
+                                    <i class="bi bi-diagram-3"></i> Parent Category
+                                </label>
+                                <select asp-for="ParentCategoryID" class="form-select">
+                                    <option value="">Root Category (No Parent)</option>
+                                    @if (ViewBag.ParentCategories != null)
+                                    {
+                                        @foreach (var parent in ViewBag.ParentCategories)
+                                        {
+                                            @if (parent.CategoryID != Model.CategoryID)
+                                            {
+                                                <option value="@parent.CategoryID">@parent.CategoryName</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="ParentCategoryID" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CategoryDescription" class="form-label">
+                            <i class="bi bi-file-text"></i> Description
+                        </label>
+                        <textarea asp-for="CategoryDescription" class="form-control" rows="3"
+                                  placeholder="Enter category description (optional)"></textarea>
+                        <span asp-validation-for="CategoryDescription" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                            <label asp-for="IsActive" class="form-check-label">
+                                <i class="bi bi-toggle-on"></i> Active Category
+                            </label>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Active categories appear in news creation forms
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Information -->
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Category Information:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Category ID:</strong> @Model.CategoryID</li>
+                                <li><strong>News Articles:</strong> @(Model.NewsArticles?.Count() ?? 0) articles using this category</li>
+                                @if (Model.ParentCategoryID.HasValue)
+                                {
+                                    <li><strong>Current Parent:</strong>
+                                        @{
+                                            var currentParent = ViewBag.ParentCategories != null ?
+                                                ((IEnumerable<dynamic>)ViewBag.ParentCategories).FirstOrDefault(c => c.CategoryID == Model.ParentCategoryID) : null;
+                                        }
+                                        @(currentParent?.CategoryName ?? "Unknown")
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li><strong>Type:</strong> Root Category</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    @if (ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Please correct the following errors:</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="ManageCategories" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Categories
+                        </a>
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="resetForm()">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Update Category
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Usage Information -->
+        @if (Model.NewsArticles != null && Model.NewsArticles.Any())
+        {
+            <div class="card mt-4">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="bi bi-newspaper"></i> Articles Using This Category</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-warning">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        <strong>Warning:</strong> This category is currently being used by @Model.NewsArticles.Count() news article(s). 
+                        It cannot be deleted while in use.
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Article ID</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var article in Model.NewsArticles.Take(5))
+                                {
+                                    <tr>
+                                        <td><code>@article.NewsArticleID</code></td>
+                                        <td>@article.NewsTitle</td>
+                                        <td>
+                                            @if (article.NewsStatus)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>@article.CreatedDate?.ToString("MMM dd, yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        @if (Model.NewsArticles.Count() > 5)
+                        {
+                            <p class="text-muted">... and @(Model.NewsArticles.Count() - 5) more articles</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Edit Guidelines -->
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Edit Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-check-circle text-success"></i> Safe Changes:</h6>
+                        <ul>
+                            <li>Update category name</li>
+                            <li>Modify description</li>
+                            <li>Change active status</li>
+                            <li>Update parent category</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-exclamation-triangle text-warning"></i> Important Notes:</h6>
+                        <ul>
+                            <li>Cannot set self as parent</li>
+                            <li>Deactivating affects news forms</li>
+                            <li>Changes apply to existing articles</li>
+                            <li>Parent changes affect hierarchy</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetForm() {
+    if (confirm('Are you sure you want to reset all changes?')) {
+        document.querySelector('form').reset();
+    }
+}
+
+// Auto-dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

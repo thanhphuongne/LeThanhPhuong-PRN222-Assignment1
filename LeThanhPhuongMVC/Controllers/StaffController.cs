@@ -9,12 +9,14 @@ namespace LeThanhPhuongMVC.Controllers
         private readonly INewsArticleService _newsService;
         private readonly ICategoryService _categoryService;
         private readonly ITagService _tagService;
+        private readonly IAccountService _accountService;
 
-        public StaffController(INewsArticleService newsService, ICategoryService categoryService, ITagService tagService)
+        public StaffController(INewsArticleService newsService, ICategoryService categoryService, ITagService tagService, IAccountService accountService)
         {
             _newsService = newsService;
             _categoryService = categoryService;
             _tagService = tagService;
+            _accountService = accountService;
         }
 
         public async Task<IActionResult> Index()
@@ -309,6 +311,76 @@ namespace LeThanhPhuongMVC.Controllers
             }
 
             return RedirectToAction("ManageTags");
+        }
+
+        // Profile Management
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var account = await _accountService.GetAccountByIdAsync((short)CurrentUserId!.Value);
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new LeThanhPhuongMVC.Models.AccountViewModel
+            {
+                AccountId = account.AccountID,
+                AccountName = account.AccountName,
+                AccountEmail = account.AccountEmail,
+                AccountRole = account.AccountRole
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Profile(LeThanhPhuongMVC.Models.AccountViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var account = await _accountService.GetAccountByIdAsync((short)CurrentUserId!.Value);
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            // Update account information
+            account.AccountName = model.AccountName;
+            account.AccountEmail = model.AccountEmail;
+
+            // Only update password if provided
+            if (!string.IsNullOrEmpty(model.AccountPassword))
+            {
+                account.AccountPassword = model.AccountPassword;
+            }
+
+            var result = await _accountService.UpdateAccountAsync(account);
+            if (result)
+            {
+                // Update session with new name
+                HttpContext.Session.SetString("UserName", account.AccountName);
+                HttpContext.Session.SetString("UserEmail", account.AccountEmail);
+
+                TempData["SuccessMessage"] = "Profile updated successfully.";
+                return RedirectToAction("Profile");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Failed to update profile. Email may already exist.");
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> NewsHistory()
+        {
+            var myNews = await _newsService.GetNewsByAuthorAsync((short)CurrentUserId!);
+            ViewBag.Title = "My News History";
+            return View("ManageNews", myNews); // Reuse the ManageNews view
         }
     }
 }

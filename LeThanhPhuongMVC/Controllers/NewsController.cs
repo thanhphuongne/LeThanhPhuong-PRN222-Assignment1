@@ -14,8 +14,24 @@ namespace LeThanhPhuongMVC.Controllers
             _categoryService = categoryService;
         }
 
+        private void SetUserContext()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var userRole = HttpContext.Session.GetInt32("UserRole");
+            var userName = HttpContext.Session.GetString("UserName");
+
+            ViewBag.CurrentUserName = userName;
+            ViewBag.CurrentUserRole = userRole;
+            ViewBag.IsAdmin = userRole == 3;
+            ViewBag.IsStaff = userRole == 1;
+            ViewBag.IsLecturer = userRole == 2;
+        }
+
         public async Task<IActionResult> Index(string? search, short? categoryId)
         {
+            // Set user context for navigation
+            SetUserContext();
+
             ViewBag.Categories = await _categoryService.GetActiveCategoriesAsync();
             ViewBag.CurrentSearch = search;
             ViewBag.CurrentCategoryId = categoryId;
@@ -26,6 +42,8 @@ namespace LeThanhPhuongMVC.Controllers
 
         public async Task<IActionResult> Details(string id)
         {
+            SetUserContext();
+
             if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
@@ -43,6 +61,8 @@ namespace LeThanhPhuongMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(string searchTerm)
         {
+            SetUserContext();
+
             if (string.IsNullOrEmpty(searchTerm))
             {
                 return RedirectToAction("Index");

@@ -1,0 +1,165 @@
+@model LeThanhPhuongMVC.Models.AccountViewModel
+@{
+    ViewData["Title"] = "Edit Account";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-person-gear"></i> Edit Account
+                </h4>
+            </div>
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form asp-action="EditAccount" method="post">
+                    <input asp-for="AccountId" type="hidden" />
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="AccountName" class="form-label">
+                                    <i class="bi bi-person"></i> Full Name
+                                </label>
+                                <input asp-for="AccountName" class="form-control" placeholder="Enter full name" />
+                                <span asp-validation-for="AccountName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="AccountEmail" class="form-label">
+                                    <i class="bi bi-envelope"></i> Email Address
+                                </label>
+                                <input asp-for="AccountEmail" class="form-control" placeholder="Enter email address" />
+                                <span asp-validation-for="AccountEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="AccountRole" class="form-label">
+                                    <i class="bi bi-shield"></i> Role
+                                </label>
+                                <select asp-for="AccountRole" class="form-select">
+                                    <option value="">Select Role</option>
+                                    <option value="1">Staff - Manage news, categories, and tags</option>
+                                    <option value="2">Lecturer - View news articles</option>
+                                    <option value="3">Administrator - Full system access</option>
+                                </select>
+                                <span asp-validation-for="AccountRole" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="AccountPassword" class="form-label">
+                                    <i class="bi bi-lock"></i> New Password
+                                </label>
+                                <input asp-for="AccountPassword" class="form-control" placeholder="Leave blank to keep current password" />
+                                <span asp-validation-for="AccountPassword" class="text-danger"></span>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> Leave blank to keep the current password
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Account Information:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Account ID:</strong> @Model.AccountId</li>
+                                <li><strong>Current Role:</strong> 
+                                    @switch (Model.AccountRole)
+                                    {
+                                        case 1:
+                                            <span class="badge bg-warning">Staff</span>
+                                            break;
+                                        case 2:
+                                            <span class="badge bg-info">Lecturer</span>
+                                            break;
+                                        case 3:
+                                            <span class="badge bg-danger">Administrator</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">Unknown</span>
+                                            break;
+                                    }
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    @if (ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Please correct the following errors:</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="ManageAccounts" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Accounts
+                        </a>
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="resetForm()">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Update Account
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetForm() {
+    if (confirm('Are you sure you want to reset all changes?')) {
+        document.querySelector('form').reset();
+    }
+}
+
+// Auto-dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

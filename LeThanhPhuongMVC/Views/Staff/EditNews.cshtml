@@ -1,0 +1,237 @@
+@model FUNewsManagement.BusinessObjects.NewsArticle
+@{
+    ViewData["Title"] = "Edit News Article";
+}
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil-square"></i> Edit News Article
+                </h4>
+            </div>
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form asp-action="EditNews" method="post">
+                    <input asp-for="NewsArticleID" type="hidden" />
+                    <input asp-for="CreatedByID" type="hidden" />
+                    <input asp-for="CreatedDate" type="hidden" />
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label asp-for="NewsTitle" class="form-label">
+                                    <i class="bi bi-card-heading"></i> News Title *
+                                </label>
+                                <input asp-for="NewsTitle" class="form-control" placeholder="Enter news title" />
+                                <span asp-validation-for="NewsTitle" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="CategoryID" class="form-label">
+                                    <i class="bi bi-tags"></i> Category *
+                                </label>
+                                <select asp-for="CategoryID" class="form-select">
+                                    <option value="">Select Category</option>
+                                    @foreach (var category in ViewBag.Categories)
+                                    {
+                                        <option value="@category.CategoryID">@category.CategoryName</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="CategoryID" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label asp-for="Headline" class="form-label">
+                                    <i class="bi bi-subtitle"></i> Headline
+                                </label>
+                                <input asp-for="Headline" class="form-control" placeholder="Enter headline (optional)" />
+                                <span asp-validation-for="Headline" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="NewsStatus" class="form-label">
+                                    <i class="bi bi-toggle-on"></i> Status
+                                </label>
+                                <select asp-for="NewsStatus" class="form-select">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
+                                </select>
+                                <span asp-validation-for="NewsStatus" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="NewsContent" class="form-label">
+                            <i class="bi bi-file-text"></i> News Content *
+                        </label>
+                        <textarea asp-for="NewsContent" class="form-control" rows="8" 
+                                  placeholder="Enter the full news content..."></textarea>
+                        <span asp-validation-for="NewsContent" class="text-danger"></span>
+                    </div>
+
+                    <!-- Tags Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-tag"></i> Tags
+                        </label>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    @if (ViewBag.Tags != null)
+                                    {
+                                        @foreach (var tag in ViewBag.Tags)
+                                        {
+                                            <div class="col-md-3 mb-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                           name="selectedTags" value="@tag.TagID" 
+                                                           id="tag_@tag.TagID"
+                                                           @(ViewBag.SelectedTags != null && ((List<int>)ViewBag.SelectedTags).Contains(tag.TagID) ? "checked" : "") />
+                                                    <label class="form-check-label" for="tag_@tag.TagID">
+                                                        @tag.TagName
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                @if (ViewBag.Tags == null || !((IEnumerable<dynamic>)ViewBag.Tags).Any())
+                                {
+                                    <p class="text-muted mb-0">
+                                        <i class="bi bi-info-circle"></i> No tags available. 
+                                        <a asp-action="ManageTags" class="text-decoration-none">Create tags first</a>.
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Article Information -->
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Article Information:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Article ID:</strong> @Model.NewsArticleID</li>
+                                <li><strong>Created:</strong> @Model.CreatedDate?.ToString("MMM dd, yyyy HH:mm")</li>
+                                <li><strong>Author:</strong> @ViewBag.CurrentUserName</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    @if (ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Please correct the following errors:</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="ManageNews" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to My Articles
+                        </a>
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="resetForm()">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Update Article
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Preview Card -->
+        <div class="card mt-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-eye"></i> Preview</h5>
+            </div>
+            <div class="card-body">
+                <div id="preview-content">
+                    <h4 id="preview-title">@Model.NewsTitle</h4>
+                    <p class="text-muted" id="preview-headline">@Model.Headline</p>
+                    <div id="preview-content-text">@Model.NewsContent</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetForm() {
+    if (confirm('Are you sure you want to reset all changes?')) {
+        document.querySelector('form').reset();
+        updatePreview();
+    }
+}
+
+function updatePreview() {
+    const title = document.getElementById('NewsTitle').value || 'News Title';
+    const headline = document.getElementById('Headline').value || '';
+    const content = document.getElementById('NewsContent').value || 'News content will appear here...';
+    
+    document.getElementById('preview-title').textContent = title;
+    document.getElementById('preview-headline').textContent = headline;
+    document.getElementById('preview-content-text').textContent = content;
+}
+
+// Update preview on input
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('NewsTitle');
+    const headlineInput = document.getElementById('Headline');
+    const contentInput = document.getElementById('NewsContent');
+    
+    if (titleInput) titleInput.addEventListener('input', updatePreview);
+    if (headlineInput) headlineInput.addEventListener('input', updatePreview);
+    if (contentInput) contentInput.addEventListener('input', updatePreview);
+    
+    // Initial preview update
+    updatePreview();
+    
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

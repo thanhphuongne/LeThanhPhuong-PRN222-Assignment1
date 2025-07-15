@@ -18,6 +18,104 @@
             </div>
         </div>
 
+        <!-- Staff Dashboard Widget -->
+        @if (ViewBag.IsStaff == true)
+        {
+            <div class="card mb-4 border-primary" id="staffDashboardWidget">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-speedometer2"></i> Staff Dashboard
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#staffDashboardContent" aria-expanded="true"
+                                    aria-controls="staffDashboardContent" id="toggleButton">
+                                <i class="bi bi-chevron-up" id="toggleIcon"></i>
+                            </button>
+                            <a asp-controller="Staff" asp-action="Index" class="btn btn-light btn-sm">
+                                <i class="bi bi-arrow-right"></i> Full Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse show" id="staffDashboardContent">
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-md-2">
+                                <div class="d-grid">
+                                    <a asp-controller="Staff" asp-action="CreateNews" class="btn btn-success btn-sm">
+                                        <i class="bi bi-plus-circle"></i><br><small>Create News</small>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="d-grid">
+                                    <a asp-controller="Staff" asp-action="ManageNews" class="btn btn-info btn-sm">
+                                        <i class="bi bi-newspaper"></i><br><small>My Articles</small>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="d-grid">
+                                    <a asp-controller="Staff" asp-action="ManageCategories" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-tags"></i><br><small>Categories</small>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="d-grid">
+                                    <a asp-controller="Staff" asp-action="ManageTags" class="btn btn-secondary btn-sm">
+                                        <i class="bi bi-tag"></i><br><small>Tags</small>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="d-grid">
+                                    <a asp-controller="Staff" asp-action="Profile" class="btn btn-dark btn-sm">
+                                        <i class="bi bi-person-gear"></i><br><small>My Profile</small>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="d-grid">
+                                    <a asp-controller="Staff" asp-action="NewsHistory" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-clock-history"></i><br><small>History</small>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="alert alert-light mb-0">
+                                    <div class="row text-center">
+                                        <div class="col-md-3">
+                                            <strong class="text-primary">Quick Actions</strong><br>
+                                            <small class="text-muted">Access all staff features instantly</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong class="text-success">Create Content</strong><br>
+                                            <small class="text-muted">Add news, categories, and tags</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong class="text-warning">Manage Content</strong><br>
+                                            <small class="text-muted">Edit and organize your content</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong class="text-info">Track Progress</strong><br>
+                                            <small class="text-muted">View your article history</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
         <!-- Category Filter -->
         <div class="mb-4">
             <div class="btn-group" role="group">
@@ -127,6 +225,22 @@
         document.querySelector('input[name="searchTerm"]').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 this.form.submit();
+            }
+        });
+
+        // Staff Dashboard collapse functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const staffDashboardContent = document.getElementById('staffDashboardContent');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            if (staffDashboardContent && toggleIcon) {
+                staffDashboardContent.addEventListener('shown.bs.collapse', function () {
+                    toggleIcon.className = 'bi bi-chevron-up';
+                });
+
+                staffDashboardContent.addEventListener('hidden.bs.collapse', function () {
+                    toggleIcon.className = 'bi bi-chevron-down';
+                });
             }
         });
     </script>

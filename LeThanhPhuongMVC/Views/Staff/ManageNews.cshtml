@@ -1,0 +1,252 @@
+@model IEnumerable<FUNewsManagement.BusinessObjects.NewsArticle>
+@{
+    ViewData["Title"] = ViewBag.Title ?? "Manage My News Articles";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-newspaper"></i> @ViewData["Title"]</h2>
+            <div class="text-muted">
+                <i class="bi bi-person-circle"></i> Welcome, @ViewBag.CurrentUserName
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <a asp-action="CreateNews" class="btn btn-success">
+                                <i class="bi bi-plus-circle"></i> Create New Article
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <a asp-action="Index" class="btn btn-outline-primary">
+                                <i class="bi bi-house"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <a asp-action="ManageCategories" class="btn btn-outline-warning">
+                                <i class="bi bi-tags"></i> Manage Categories
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <a asp-action="ManageTags" class="btn btn-outline-info">
+                                <i class="bi bi-tag"></i> Manage Tags
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Articles -->
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-list"></i> My News Articles (@Model.Count() total)
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                    <th>Tags</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var article in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <code>@article.NewsArticleID</code>
+                                        </td>
+                                        <td>
+                                            <strong>@article.NewsTitle</strong>
+                                            @if (!string.IsNullOrEmpty(article.Headline))
+                                            {
+                                                <br><small class="text-muted">@article.Headline</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@article.Category.CategoryName</span>
+                                        </td>
+                                        <td>
+                                            @if (article.NewsStatus)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <small>@article.CreatedDate?.ToString("MMM dd, yyyy")<br>@article.CreatedDate?.ToString("HH:mm")</small>
+                                        </td>
+                                        <td>
+                                            @if (article.Tags.Any())
+                                            {
+                                                @foreach (var tag in article.Tags.Take(3))
+                                                {
+                                                    <span class="badge bg-secondary me-1">@tag.TagName</span>
+                                                }
+                                                @if (article.Tags.Count() > 3)
+                                                {
+                                                    <span class="badge bg-light text-dark">+@(article.Tags.Count() - 3) more</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No tags</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="EditNews" asp-route-id="@article.NewsArticleID" 
+                                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="confirmDelete('@article.NewsArticleID', '@article.NewsTitle')" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h4>@Model.Count()</h4>
+                                    <p class="mb-0">Total Articles</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h4>@Model.Count(n => n.NewsStatus)</h4>
+                                    <p class="mb-0">Active</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body text-center">
+                                    <h4>@Model.Count(n => !n.NewsStatus)</h4>
+                                    <p class="mb-0">Inactive</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h4>@Model.GroupBy(n => n.CategoryID).Count()</h4>
+                                    <p class="mb-0">Categories Used</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-newspaper display-1 text-muted"></i>
+                        <h4 class="text-muted mt-3">No Articles Found</h4>
+                        <p class="text-muted">You haven't created any news articles yet.</p>
+                        <a asp-action="CreateNews" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Create Your First Article
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this news article?</p>
+                <p><strong id="deleteArticleTitle"></strong></p>
+                <p class="text-danger"><i class="bi bi-exclamation-triangle"></i> This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Article
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(articleId, articleTitle) {
+    document.getElementById('deleteArticleTitle').textContent = articleTitle;
+    document.getElementById('deleteForm').action = '@Url.Action("DeleteNews")/' + articleId;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+// Auto-dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>

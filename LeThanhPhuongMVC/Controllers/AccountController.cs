@@ -62,9 +62,9 @@ namespace LeThanhPhuongMVC.Controllers
         {
             return role switch
             {
-                1 => RedirectToAction("Index", "Admin"), // Admin
-                2 => RedirectToAction("Index", "Staff"), // Staff
-                3 => RedirectToAction("Index", "News"), // Lecturer - can view news
+                1 => RedirectToAction("Index", "Staff"), // Staff role = 1
+                2 => RedirectToAction("Index", "News"), // Lecturer role = 2 - can view news
+                3 => RedirectToAction("Index", "Admin"), // Admin role = 3
                 _ => RedirectToAction("Index", "News") // Default to news view
             };
         }

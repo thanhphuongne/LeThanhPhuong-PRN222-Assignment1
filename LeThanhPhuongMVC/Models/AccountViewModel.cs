@@ -28,9 +28,9 @@ namespace LeThanhPhuongMVC.Models
 
         public string RoleName => AccountRole switch
         {
-            1 => "Admin",
-            2 => "Staff",
-            3 => "Lecturer",
+            1 => "Staff",
+            2 => "Lecturer",
+            3 => "Admin",
             _ => "Unknown"
         };
     }

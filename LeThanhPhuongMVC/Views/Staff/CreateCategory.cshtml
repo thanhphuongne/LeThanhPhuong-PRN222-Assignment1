@@ -1,0 +1,202 @@
+@model FUNewsManagement.BusinessObjects.Category
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Create New Category
+                </h4>
+            </div>
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form asp-action="CreateCategory" method="post">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label asp-for="CategoryName" class="form-label">
+                                    <i class="bi bi-tag"></i> Category Name *
+                                </label>
+                                <input asp-for="CategoryName" class="form-control" placeholder="Enter category name" />
+                                <span asp-validation-for="CategoryName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="ParentCategoryID" class="form-label">
+                                    <i class="bi bi-diagram-3"></i> Parent Category
+                                </label>
+                                <select asp-for="ParentCategoryID" class="form-select">
+                                    <option value="">Root Category (No Parent)</option>
+                                    @if (ViewBag.ParentCategories != null)
+                                    {
+                                        @foreach (var parent in ViewBag.ParentCategories)
+                                        {
+                                            <option value="@parent.CategoryID">@parent.CategoryName</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="ParentCategoryID" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CategoryDescription" class="form-label">
+                            <i class="bi bi-file-text"></i> Description
+                        </label>
+                        <textarea asp-for="CategoryDescription" class="form-control" rows="3"
+                                  placeholder="Enter category description (optional)"></textarea>
+                        <span asp-validation-for="CategoryDescription" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" checked />
+                            <label asp-for="IsActive" class="form-check-label">
+                                <i class="bi bi-toggle-on"></i> Active Category
+                            </label>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Active categories appear in news creation forms
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Please correct the following errors:</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="ManageCategories" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Categories
+                        </a>
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="resetForm()">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-lg"></i> Create Category
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Category Guidelines -->
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Category Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-check-circle text-success"></i> Best Practices:</h6>
+                        <ul>
+                            <li>Use clear, descriptive names</li>
+                            <li>Keep names concise (2-3 words max)</li>
+                            <li>Use consistent naming conventions</li>
+                            <li>Add descriptions for clarity</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-info-circle text-primary"></i> Category Structure:</h6>
+                        <ul>
+                            <li><strong>Root Categories:</strong> Main topics (e.g., "Academic", "Sports")</li>
+                            <li><strong>Subcategories:</strong> Specific areas (e.g., "Computer Science" under "Academic")</li>
+                            <li><strong>Active Status:</strong> Only active categories appear in forms</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examples -->
+        <div class="card mt-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-collection"></i> Category Examples</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6 class="text-primary">Academic</h6>
+                        <ul class="list-unstyled">
+                            <li><span class="badge bg-light text-dark">Computer Science</span></li>
+                            <li><span class="badge bg-light text-dark">Business</span></li>
+                            <li><span class="badge bg-light text-dark">Engineering</span></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-success">Student Life</h6>
+                        <ul class="list-unstyled">
+                            <li><span class="badge bg-light text-dark">Events</span></li>
+                            <li><span class="badge bg-light text-dark">Clubs</span></li>
+                            <li><span class="badge bg-light text-dark">Sports</span></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-warning">Administration</h6>
+                        <ul class="list-unstyled">
+                            <li><span class="badge bg-light text-dark">Announcements</span></li>
+                            <li><span class="badge bg-light text-dark">Policies</span></li>
+                            <li><span class="badge bg-light text-dark">Updates</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetForm() {
+    if (confirm('Are you sure you want to reset all changes?')) {
+        document.querySelector('form').reset();
+        // Reset checkbox to checked
+        document.getElementById('IsActive').checked = true;
+    }
+}
+
+// Auto-dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -26,6 +26,7 @@ namespace LeThanhPhuongMVC.Controllers
         public async Task<IActionResult> ManageAccounts()
         {
             var accounts = await _accountService.GetAllAccountsAsync();
+            ViewBag.UserId = CurrentUserId;
             return View(accounts);
         }
 

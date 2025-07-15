@@ -1,0 +1,294 @@
+@model IEnumerable<FUNewsManagement.BusinessObjects.Category>
+@{
+    ViewData["Title"] = "Manage Categories";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-tags"></i> Manage Categories</h2>
+            <div class="text-muted">
+                <i class="bi bi-person-circle"></i> Welcome, @ViewBag.CurrentUserName
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <a asp-action="CreateCategory" class="btn btn-success">
+                                <i class="bi bi-plus-circle"></i> Create New Category
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <a asp-action="Index" class="btn btn-outline-primary">
+                                <i class="bi bi-house"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <a asp-action="ManageNews" class="btn btn-outline-info">
+                                <i class="bi bi-newspaper"></i> Manage News
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <a asp-action="ManageTags" class="btn btn-outline-secondary">
+                                <i class="bi bi-tag"></i> Manage Tags
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-list"></i> All Categories (@Model.Count() total)
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Category Name</th>
+                                    <th>Description</th>
+                                    <th>Parent Category</th>
+                                    <th>Status</th>
+                                    <th>News Count</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var category in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <code>@category.CategoryID</code>
+                                        </td>
+                                        <td>
+                                            <strong>@category.CategoryName</strong>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(category.CategoryDescription))
+                                            {
+                                                <span>@category.CategoryDescription</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No description</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @{
+                                                var parentCategory = category.ParentCategoryID.HasValue ?
+                                                    Model.FirstOrDefault(c => c.CategoryID == category.ParentCategoryID) : null;
+                                            }
+                                            @if (category.ParentCategoryID.HasValue)
+                                            {
+                                                @if (parentCategory != null)
+                                                {
+                                                    <span class="badge bg-info">@parentCategory.CategoryName</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Parent not found</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-primary">Root Category</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (category.IsActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @{
+                                                var newsCount = category.NewsArticles?.Count() ?? 0;
+                                            }
+                                            @if (newsCount > 0)
+                                            {
+                                                <span class="badge bg-warning">@newsCount articles</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No articles</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="EditCategory" asp-route-id="@category.CategoryID" 
+                                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                @if (newsCount == 0)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            onclick="confirmDelete(@category.CategoryID, '@category.CategoryName')" title="Delete">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                            title="Cannot delete - has articles" disabled>
+                                                        <i class="bi bi-lock"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h4>@Model.Count()</h4>
+                                    <p class="mb-0">Total Categories</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h4>@Model.Count(c => c.IsActive)</h4>
+                                    <p class="mb-0">Active</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body text-center">
+                                    <h4>@Model.Count(c => !c.IsActive)</h4>
+                                    <p class="mb-0">Inactive</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h4>@Model.Count(c => !c.ParentCategoryID.HasValue)</h4>
+                                    <p class="mb-0">Root Categories</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-tags display-1 text-muted"></i>
+                        <h4 class="text-muted mt-3">No Categories Found</h4>
+                        <p class="text-muted">You haven't created any categories yet.</p>
+                        <a asp-action="CreateCategory" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Create Your First Category
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Important Notes -->
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Important Notes</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><strong>Delete Protection:</strong> Categories with associated news articles cannot be deleted</li>
+                    <li><strong>Parent Categories:</strong> Root categories have no parent, subcategories have a parent</li>
+                    <li><strong>Status:</strong> Only active categories appear in news creation forms</li>
+                    <li><strong>News Count:</strong> Shows how many articles are using each category</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this category?</p>
+                <p><strong id="deleteCategoryName"></strong></p>
+                <p class="text-danger"><i class="bi bi-exclamation-triangle"></i> This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Category
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(categoryId, categoryName) {
+    document.getElementById('deleteCategoryName').textContent = categoryName;
+    document.getElementById('deleteForm').action = '@Url.Action("DeleteCategory")/' + categoryId;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+// Auto-dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>

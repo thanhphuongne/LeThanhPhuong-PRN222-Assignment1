@@ -261,62 +261,8 @@
             </div>
         </div>
 
-        <!-- Export Options -->
-        @if (Model.Any())
-        {
-            <div class="card mt-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-download"></i> Export Options</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <p class="text-muted">Export this report in different formats:</p>
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-outline-success" onclick="window.print()">
-                                    <i class="bi bi-printer"></i> Print Report
-                                </button>
-                                <button type="button" class="btn btn-outline-primary" onclick="exportToCSV()">
-                                    <i class="bi bi-file-earmark-spreadsheet"></i> Export to CSV
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
+
     </div>
 </div>
 
-<script>
-function exportToCSV() {
-    // Get table data
-    const table = document.querySelector('table');
-    if (!table) return;
 
-    let csv = 'ID,Title,Category,Author,Created Date,Status,Tags\n';
-
-    const rows = table.querySelectorAll('tbody tr');
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        const rowData = [];
-        cells.forEach((cell, index) => {
-            if (index < 7) { // Only first 7 columns
-                let text = cell.textContent.trim().replace(/"/g, '""');
-                rowData.push('"' + text + '"');
-            }
-        });
-        csv += rowData.join(',') + '\n';
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.setAttribute('hidden', '');
-    a.setAttribute('href', url);
-    a.setAttribute('download', 'news_report_' + new Date().toISOString().slice(0,10) + '.csv');
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-</script>

@@ -1,0 +1,205 @@
+@model FUNewsManagement.BusinessObjects.Tag
+@{
+    ViewData["Title"] = "Edit Tag";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil-square"></i> Edit Tag
+                </h4>
+            </div>
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form asp-action="EditTag" method="post">
+                    <input asp-for="TagID" type="hidden" />
+                    
+                    <div class="mb-3">
+                        <label asp-for="TagName" class="form-label">
+                            <i class="bi bi-tag"></i> Tag Name *
+                        </label>
+                        <input asp-for="TagName" class="form-control" placeholder="Enter tag name" />
+                        <span asp-validation-for="TagName" class="text-danger"></span>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle"></i> Use single words or short phrases, lowercase preferred
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Note" class="form-label">
+                            <i class="bi bi-file-text"></i> Note
+                        </label>
+                        <textarea asp-for="Note" class="form-control" rows="3" 
+                                  placeholder="Enter a note about this tag (optional)"></textarea>
+                        <span asp-validation-for="Note" class="text-danger"></span>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle"></i> Describe when and how to use this tag
+                        </div>
+                    </div>
+
+                    <!-- Tag Information -->
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Tag Information:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Tag ID:</strong> @Model.TagID</li>
+                                <li><strong>Usage:</strong> @(Model.NewsArticles?.Count() ?? 0) news articles using this tag</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    @if (ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Please correct the following errors:</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="ManageTags" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Tags
+                        </a>
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="resetForm()">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Update Tag
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Usage Information -->
+        @if (Model.NewsArticles != null && Model.NewsArticles.Any())
+        {
+            <div class="card mt-4">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="bi bi-newspaper"></i> Articles Using This Tag</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-info">
+                        <i class="bi bi-info-circle"></i> 
+                        This tag is currently being used by @Model.NewsArticles.Count() news article(s). 
+                        Changes will affect all these articles.
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Article ID</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var article in Model.NewsArticles.Take(5))
+                                {
+                                    <tr>
+                                        <td><code>@article.NewsArticleID</code></td>
+                                        <td>@article.NewsTitle</td>
+                                        <td>
+                                            @if (article.NewsStatus)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>@article.CreatedDate?.ToString("MMM dd, yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        @if (Model.NewsArticles.Count() > 5)
+                        {
+                            <p class="text-muted">... and @(Model.NewsArticles.Count() - 5) more articles</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Edit Guidelines -->
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Edit Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-check-circle text-success"></i> Safe Changes:</h6>
+                        <ul>
+                            <li>Update tag name</li>
+                            <li>Modify note/description</li>
+                            <li>Fix typos or formatting</li>
+                            <li>Improve clarity</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-exclamation-triangle text-warning"></i> Important Notes:</h6>
+                        <ul>
+                            <li>Changes affect all articles</li>
+                            <li>Keep tag name relevant</li>
+                            <li>Avoid breaking existing meaning</li>
+                            <li>Consider creating new tag instead</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetForm() {
+    if (confirm('Are you sure you want to reset all changes?')) {
+        document.querySelector('form').reset();
+    }
+}
+
+// Auto-dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
