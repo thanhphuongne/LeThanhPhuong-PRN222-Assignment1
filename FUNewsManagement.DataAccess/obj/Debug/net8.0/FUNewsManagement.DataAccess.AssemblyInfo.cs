@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FUNewsManagement.DataAccess")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d333715529cbdbb9c6f20aa0647a6f5891930854")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1b07787941278d640e4682415d87c836723303e")]
 [assembly: System.Reflection.AssemblyProductAttribute("FUNewsManagement.DataAccess")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FUNewsManagement.DataAccess")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
