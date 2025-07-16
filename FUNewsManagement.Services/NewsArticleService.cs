@@ -77,7 +77,7 @@ namespace FUNewsManagement.Services
             }
         }
 
-        public async Task<bool> UpdateNewsAsync(NewsArticle news, List<int> tagIds)
+        public async Task<bool> UpdateNewsAsync(NewsArticle news, List<int> tagIds, short updatedByID)
         {
             try
             {
@@ -91,6 +91,7 @@ namespace FUNewsManagement.Services
                 existingNews.NewsSource = news.NewsSource;
                 existingNews.CategoryID = news.CategoryID;
                 existingNews.NewsStatus = news.NewsStatus;
+                existingNews.UpdatedByID = updatedByID;
                 existingNews.ModifiedDate = DateTime.Now;
 
                 // Update tags

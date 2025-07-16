@@ -43,6 +43,12 @@ namespace LeThanhPhuongMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateNews(NewsArticle model, List<int> selectedTags)
         {
+            // Remove validation errors for navigation properties that aren't submitted in the form
+            ModelState.Remove("Category");
+            ModelState.Remove("CreatedBy");
+            ModelState.Remove("UpdatedBy");
+            ModelState.Remove("Tags");
+
             if (!ModelState.IsValid)
             {
                 ViewBag.Categories = await _categoryService.GetActiveCategoriesAsync();
@@ -90,10 +96,17 @@ namespace LeThanhPhuongMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> EditNews(NewsArticle model, List<int> selectedTags)
         {
+            // Remove validation errors for navigation properties that aren't submitted in the form
+            ModelState.Remove("Category");
+            ModelState.Remove("CreatedBy");
+            ModelState.Remove("UpdatedBy");
+            ModelState.Remove("Tags");
+
             if (!ModelState.IsValid)
             {
                 ViewBag.Categories = await _categoryService.GetActiveCategoriesAsync();
                 ViewBag.Tags = await _tagService.GetAllTagsAsync();
+                ViewBag.SelectedTags = selectedTags ?? new List<int>();
                 return View(model);
             }
 
@@ -103,7 +116,7 @@ namespace LeThanhPhuongMVC.Controllers
                 return NotFound();
             }
 
-            var result = await _newsService.UpdateNewsAsync(model, selectedTags ?? new List<int>());
+            var result = await _newsService.UpdateNewsAsync(model, selectedTags ?? new List<int>(), (short)CurrentUserId!);
             if (result)
             {
                 TempData["SuccessMessage"] = "News article updated successfully.";
@@ -113,6 +126,7 @@ namespace LeThanhPhuongMVC.Controllers
             ModelState.AddModelError("", "Failed to update news article.");
             ViewBag.Categories = await _categoryService.GetActiveCategoriesAsync();
             ViewBag.Tags = await _tagService.GetAllTagsAsync();
+            ViewBag.SelectedTags = selectedTags ?? new List<int>();
             return View(model);
         }
 

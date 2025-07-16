@@ -88,9 +88,17 @@
                         <label asp-for="NewsContent" class="form-label">
                             <i class="bi bi-file-text"></i> News Content *
                         </label>
-                        <textarea asp-for="NewsContent" class="form-control" rows="8" 
+                        <textarea asp-for="NewsContent" class="form-control" rows="8"
                                   placeholder="Enter the full news content..."></textarea>
                         <span asp-validation-for="NewsContent" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="NewsSource" class="form-label">
+                            <i class="bi bi-link-45deg"></i> News Source
+                        </label>
+                        <input asp-for="NewsSource" class="form-control" placeholder="Enter news source (optional)" />
+                        <span asp-validation-for="NewsSource" class="text-danger"></span>
                     </div>
 
                     <!-- Tags Selection -->

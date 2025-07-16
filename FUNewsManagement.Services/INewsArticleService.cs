@@ -12,7 +12,7 @@ namespace FUNewsManagement.Services
         Task<IEnumerable<NewsArticle>> SearchNewsAsync(string searchTerm);
         Task<IEnumerable<NewsArticle>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<bool> CreateNewsAsync(NewsArticle news, List<int> tagIds);
-        Task<bool> UpdateNewsAsync(NewsArticle news, List<int> tagIds);
+        Task<bool> UpdateNewsAsync(NewsArticle news, List<int> tagIds, short updatedByID);
         Task<bool> DeleteNewsAsync(string newsId);
         Task<string> GenerateNewsIdAsync();
     }
