@@ -7,11 +7,13 @@ namespace FUNewsManagement.Services
     {
         private readonly INewsArticleRepository _newsRepository;
         private readonly ITagRepository _tagRepository;
+        private readonly INewsNotificationService? _notificationService;
 
-        public NewsArticleService(INewsArticleRepository newsRepository, ITagRepository tagRepository)
+        public NewsArticleService(INewsArticleRepository newsRepository, ITagRepository tagRepository, INewsNotificationService? notificationService = null)
         {
             _newsRepository = newsRepository;
             _tagRepository = tagRepository;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<NewsArticle>> GetAllNewsAsync()
@@ -69,6 +71,13 @@ namespace FUNewsManagement.Services
                 news.Tags = tags;
 
                 await _newsRepository.AddAsync(news);
+
+                // Send notification
+                if (_notificationService != null)
+                {
+                    await _notificationService.NotifyNewsCreatedAsync(news);
+                }
+
                 return true;
             }
             catch
@@ -108,6 +117,13 @@ namespace FUNewsManagement.Services
                 existingNews.Tags = tags;
 
                 await _newsRepository.UpdateAsync(existingNews);
+
+                // Send notification
+                if (_notificationService != null)
+                {
+                    await _notificationService.NotifyNewsUpdatedAsync(existingNews);
+                }
+
                 return true;
             }
             catch
@@ -120,7 +136,18 @@ namespace FUNewsManagement.Services
         {
             try
             {
+                // Get news details before deletion for notification
+                var news = await _newsRepository.GetByIdAsync(newsId);
+                var newsTitle = news?.NewsTitle ?? "Unknown";
+
                 await _newsRepository.DeleteByIdAsync(newsId);
+
+                // Send notification
+                if (_notificationService != null)
+                {
+                    await _notificationService.NotifyNewsDeletedAsync(newsId, newsTitle);
+                }
+
                 return true;
             }
             catch

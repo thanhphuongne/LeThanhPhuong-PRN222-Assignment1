@@ -2,11 +2,16 @@ using Microsoft.EntityFrameworkCore;
 using FUNewsManagement.DataAccess;
 using FUNewsManagement.DataAccess.Repositories;
 using FUNewsManagement.Services;
+using LeThanhPhuongMVC.Hubs;
+using LeThanhPhuongMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add SignalR
+builder.Services.AddSignalR();
 
 // Add Entity Framework
 builder.Services.AddDbContext<FUNewsManagementDbContext>(options =>
@@ -22,8 +27,12 @@ builder.Services.AddScoped<ITagRepository, TagRepository>();
 // Add services
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<INewsNotificationService, NewsNotificationService>();
 builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
 builder.Services.AddScoped<ITagService, TagService>();
+
+// Add SignalR service
+builder.Services.AddScoped<SignalRNewsService>();
 
 // Add session support
 builder.Services.AddSession(options =>
@@ -54,5 +63,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
+
+// Map SignalR hub
+app.MapHub<NewsHub>("/newsHub");
 
 app.Run();

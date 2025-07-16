@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using FUNewsManagement.Services;
 using FUNewsManagement.BusinessObjects;
+using LeThanhPhuongMVC.Services;
 
 namespace LeThanhPhuongMVC.Controllers
 {
@@ -10,13 +11,15 @@ namespace LeThanhPhuongMVC.Controllers
         private readonly ICategoryService _categoryService;
         private readonly ITagService _tagService;
         private readonly IAccountService _accountService;
+        private readonly SignalRNewsService _signalRNewsService;
 
-        public StaffController(INewsArticleService newsService, ICategoryService categoryService, ITagService tagService, IAccountService accountService)
+        public StaffController(INewsArticleService newsService, ICategoryService categoryService, ITagService tagService, IAccountService accountService, SignalRNewsService signalRNewsService)
         {
             _newsService = newsService;
             _categoryService = categoryService;
             _tagService = tagService;
             _accountService = accountService;
+            _signalRNewsService = signalRNewsService;
         }
 
         public async Task<IActionResult> Index()
