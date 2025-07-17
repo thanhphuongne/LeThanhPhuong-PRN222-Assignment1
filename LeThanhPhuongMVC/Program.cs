@@ -15,7 +15,7 @@ builder.Services.AddSignalR();
 
 // Add Entity Framework
 builder.Services.AddDbContext<FUNewsManagementDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("LeThanhPhuongMVC")));
 
 // Add repositories

@@ -17,12 +17,12 @@ namespace LeThanhPhuongMVC.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    CategoryID = table.Column<short>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    CategoryName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    CategoryDescription = table.Column<string>(type: "TEXT", maxLength: 250, nullable: true),
-                    ParentCategoryID = table.Column<short>(type: "INTEGER", nullable: true),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                    CategoryID = table.Column<short>(type: "smallint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CategoryDescription = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    ParentCategoryID = table.Column<short>(type: "smallint", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -39,12 +39,12 @@ namespace LeThanhPhuongMVC.Migrations
                 name: "SystemAccount",
                 columns: table => new
                 {
-                    AccountID = table.Column<short>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    AccountName = table.Column<string>(type: "TEXT", maxLength: 60, nullable: false),
-                    AccountEmail = table.Column<string>(type: "TEXT", maxLength: 90, nullable: false),
-                    AccountRole = table.Column<int>(type: "INTEGER", nullable: false),
-                    AccountPassword = table.Column<string>(type: "TEXT", maxLength: 90, nullable: false)
+                    AccountID = table.Column<short>(type: "smallint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountName = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    AccountEmail = table.Column<string>(type: "nvarchar(90)", maxLength: 90, nullable: false),
+                    AccountRole = table.Column<int>(type: "int", nullable: false),
+                    AccountPassword = table.Column<string>(type: "nvarchar(90)", maxLength: 90, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,10 +55,10 @@ namespace LeThanhPhuongMVC.Migrations
                 name: "Tags",
                 columns: table => new
                 {
-                    TagID = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TagName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    Note = table.Column<string>(type: "TEXT", maxLength: 250, nullable: true)
+                    TagID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TagName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -69,17 +69,17 @@ namespace LeThanhPhuongMVC.Migrations
                 name: "NewsArticles",
                 columns: table => new
                 {
-                    NewsArticleID = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    NewsTitle = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    Headline = table.Column<string>(type: "TEXT", maxLength: 4000, nullable: true),
-                    NewsContent = table.Column<string>(type: "TEXT", maxLength: 4000, nullable: true),
-                    NewsSource = table.Column<string>(type: "TEXT", maxLength: 800, nullable: true),
-                    CategoryID = table.Column<short>(type: "INTEGER", nullable: false),
-                    NewsStatus = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreatedByID = table.Column<short>(type: "INTEGER", nullable: false),
-                    UpdatedByID = table.Column<short>(type: "INTEGER", nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    NewsArticleID = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    NewsTitle = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Headline = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    NewsContent = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    NewsSource = table.Column<string>(type: "nvarchar(800)", maxLength: 800, nullable: true),
+                    CategoryID = table.Column<short>(type: "smallint", nullable: false),
+                    NewsStatus = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedByID = table.Column<short>(type: "smallint", nullable: false),
+                    UpdatedByID = table.Column<short>(type: "smallint", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,8 +108,8 @@ namespace LeThanhPhuongMVC.Migrations
                 name: "NewsTags",
                 columns: table => new
                 {
-                    NewsArticleID = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    TagID = table.Column<int>(type: "INTEGER", nullable: false)
+                    NewsArticleID = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    TagID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -141,7 +141,12 @@ namespace LeThanhPhuongMVC.Migrations
             migrationBuilder.InsertData(
                 table: "SystemAccount",
                 columns: new[] { "AccountID", "AccountEmail", "AccountName", "AccountPassword", "AccountRole" },
-                values: new object[] { (short)1, "admin@FUNewsManagementSystem.org", "System Administrator", "@@abc123@@", 1 });
+                values: new object[,]
+                {
+                    { (short)1, "admin@FUNewsManagementSystem.org", "System Administrator", "@@abc123@@", 3 },
+                    { (short)2, "staff@FUNewsManagementSystem.org", "Staff User", "staff123", 1 },
+                    { (short)3, "lecturer@FUNewsManagementSystem.org", "Lecturer User", "lecturer123", 2 }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_ParentCategoryID",
