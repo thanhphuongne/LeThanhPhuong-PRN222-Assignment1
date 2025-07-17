@@ -1,21 +1,21 @@
-/* Modern Dark Theme for FU News Management System */
+/* Modern Light Theme for FU News Management System */
 
 :root {
-  --primary-color: #6366f1;
-  --primary-dark: #4f46e5;
+  --primary-color: #3b82f6;
+  --primary-dark: #2563eb;
   --secondary-color: #8b5cf6;
   --accent-color: #06b6d4;
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
-  --dark-bg: #0f172a;
-  --dark-surface: #1e293b;
-  --dark-card: #334155;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --border-color: #475569;
-  --shadow-color: rgba(0, 0, 0, 0.3);
+  --light-bg: #f8fafc;
+  --light-surface: #ffffff;
+  --light-card: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 html {
@@ -29,7 +29,7 @@ html {
 }
 
 body {
-  background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 100%);
+  background: linear-gradient(135deg, var(--light-bg) 0%, #e2e8f0 100%);
   color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   margin-bottom: 60px;
@@ -42,7 +42,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--dark-surface);
+  background: var(--light-surface);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -56,28 +56,28 @@ body {
 
 /* Enhanced focus styles */
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.4);
   outline: none;
 }
 
 /* Card enhancements */
 .card {
-  background: var(--dark-card);
+  background: var(--light-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: 0 4px 6px var(--shadow-color);
   transition: all 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--shadow-color);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
 .card-header {
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   border-bottom: 1px solid var(--border-color);
-  border-radius: 12px 12px 0 0 !important;
+  border-radius: 16px 16px 0 0 !important;
   color: white;
 }
 
@@ -87,10 +87,11 @@ body {
 
 /* Button styles */
 .btn {
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 500;
   transition: all 0.3s ease;
   border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary {
@@ -100,20 +101,22 @@ body {
 
 .btn-primary:hover {
   background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 .btn-outline-primary {
   border: 2px solid var(--primary-color);
   color: var(--primary-color);
   background: transparent;
+  box-shadow: none;
 }
 
 .btn-outline-primary:hover {
   background: var(--primary-color);
   color: white;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
 }
 
 .btn-success {
@@ -122,7 +125,7 @@ body {
 
 .btn-success:hover {
   background: linear-gradient(135deg, #059669, var(--success-color));
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .btn-warning {
@@ -132,7 +135,7 @@ body {
 
 .btn-warning:hover {
   background: linear-gradient(135deg, #d97706, var(--warning-color));
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .btn-info {
@@ -141,7 +144,7 @@ body {
 
 .btn-info:hover {
   background: linear-gradient(135deg, #0891b2, var(--accent-color));
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .btn-secondary {
@@ -150,7 +153,7 @@ body {
 
 .btn-secondary:hover {
   background: linear-gradient(135deg, #4b5563, #6b7280);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .btn-dark {
@@ -159,7 +162,7 @@ body {
 
 .btn-dark:hover {
   background: linear-gradient(135deg, #1f2937, #374151);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .btn-danger {
@@ -168,23 +171,23 @@ body {
 
 .btn-danger:hover {
   background: linear-gradient(135deg, #dc2626, var(--danger-color));
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 /* Form controls */
 .form-control {
-  background: var(--dark-surface);
+  background: var(--light-surface);
   border: 2px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text-primary);
   transition: all 0.3s ease;
 }
 
 .form-control:focus {
-  background: var(--dark-card);
+  background: var(--light-card);
   border-color: var(--primary-color);
   color: var(--text-primary);
-  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2);
 }
 
 .form-control::placeholder {
@@ -193,7 +196,7 @@ body {
 
 /* Navigation */
 .navbar {
-  background: linear-gradient(135deg, var(--dark-surface), var(--dark-card)) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   border-bottom: 1px solid var(--border-color);
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 10px var(--shadow-color);
@@ -209,14 +212,14 @@ body {
   color: var(--text-secondary) !important;
   font-weight: 500;
   transition: all 0.3s ease;
-  border-radius: 6px;
+  border-radius: 8px;
   margin: 0 4px;
   padding: 8px 16px !important;
 }
 
 .navbar-nav .nav-link:hover {
   color: var(--primary-color) !important;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(59, 130, 246, 0.1);
   transform: translateY(-1px);
 }
 
@@ -228,7 +231,7 @@ body {
 /* Alerts */
 .alert {
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   border-left: 4px solid;
 }
 
@@ -258,7 +261,7 @@ body {
 
 /* Badges */
 .badge {
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 500;
   padding: 6px 12px;
 }
@@ -293,7 +296,7 @@ body {
 }
 
 .table-hover tbody tr:hover {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(59, 130, 246, 0.05);
   color: var(--text-primary);
 }
 
@@ -309,7 +312,7 @@ body {
 
 /* Footer */
 .footer {
-  background: var(--dark-surface);
+  background: var(--light-surface);
   border-top: 1px solid var(--border-color);
   color: var(--text-muted);
 }
@@ -321,8 +324,8 @@ body {
 }
 
 .news-grid .card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
 }
 
 .news-grid .card-title {
@@ -338,9 +341,9 @@ body {
 
 /* Staff dashboard widget */
 #staffDashboardWidget {
-  background: linear-gradient(135deg, var(--dark-card), var(--dark-surface));
+  background: var(--light-card);
   border: 2px solid var(--primary-color);
-  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
 }
 
 #staffDashboardWidget .card-header {
@@ -374,12 +377,12 @@ body {
   .card {
     margin-bottom: 1rem;
   }
-
+  
   .btn-group .btn {
     margin-bottom: 0.5rem;
     font-size: 0.875rem;
   }
-
+  
   .navbar-brand {
     font-size: 1.25rem;
   }

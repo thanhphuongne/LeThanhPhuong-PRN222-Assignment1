@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FU News Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/LeThanhPhuongMVC.styles.css" asp-append-version="true" />
@@ -11,10 +14,10 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container-fluid">
                 <a class="navbar-brand fw-bold" asp-controller="News" asp-action="Index">
-                    <i class="bi bi-newspaper"></i> FU News Management
+                    <i class="bi bi-newspaper me-2"></i> FU News Management
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
@@ -23,14 +26,14 @@
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="News" asp-action="Index">
-                                <i class="bi bi-house"></i> Home
+                                <i class="bi bi-house me-1"></i> Home
                             </a>
                         </li>
                         @if (ViewBag.IsStaff == true)
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Staff" asp-action="Index">
-                                    <i class="bi bi-speedometer2"></i> Staff Dashboard
+                                    <i class="bi bi-speedometer2 me-1"></i> Staff Dashboard
                                 </a>
                             </li>
                         }
@@ -88,6 +91,23 @@
                         }
                     </ul>
                     <ul class="navbar-nav">
+                        <!-- Theme Switcher -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-palette me-1"></i> Theme
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" onclick="switchTheme('dark')">
+                                    <i class="bi bi-moon-stars me-1"></i> Dark Theme
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="switchTheme('light')">
+                                    <i class="bi bi-sun me-1"></i> Light Theme
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="switchTheme('vibrant')">
+                                    <i class="bi bi-rainbow me-1"></i> Vibrant Theme
+                                </a></li>
+                            </ul>
+                        </li>
                         @if (!string.IsNullOrEmpty(ViewBag.CurrentUserName))
                         {
                             <li class="nav-item dropdown">
@@ -134,8 +154,8 @@
         </div>
     }
 
-    <div class="container-fluid">
-        <main role="main" class="pb-3">
+    <div class="container-fluid px-4">
+        <main role="main" class="py-4">
             @RenderBody()
         </main>
     </div>
@@ -157,6 +177,69 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/signalr-news.js" asp-append-version="true"></script>
+
+    <!-- Theme Switcher Script -->
+    <script>
+        function switchTheme(theme) {
+            // Remove existing theme stylesheets
+            const existingThemes = document.querySelectorAll('link[data-theme]');
+            existingThemes.forEach(link => link.remove());
+
+            // Add new theme stylesheet
+            if (theme !== 'dark') {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = `/css/${theme}-theme.css`;
+                link.setAttribute('data-theme', theme);
+                document.head.appendChild(link);
+            }
+
+            // Save theme preference
+            localStorage.setItem('selectedTheme', theme);
+
+            // Show notification
+            showThemeNotification(theme);
+        }
+
+        function showThemeNotification(theme) {
+            const themeNames = {
+                'dark': 'Dark Theme',
+                'light': 'Light Theme',
+                'vibrant': 'Vibrant Theme'
+            };
+
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.theme-notification');
+            existingNotifications.forEach(notif => notif.remove());
+
+            // Create notification
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success alert-dismissible fade show theme-notification position-fixed';
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 250px;';
+            notification.innerHTML = `
+                <i class="bi bi-check-circle"></i> Switched to ${themeNames[theme]}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('selectedTheme') || 'dark';
+            if (savedTheme !== 'dark') {
+                switchTheme(savedTheme);
+            }
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
